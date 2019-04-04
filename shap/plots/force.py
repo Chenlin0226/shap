@@ -28,7 +28,7 @@ def force_plot(base_value, shap_values, features=None, feature_names=None, out_n
                plot_cmap="RdBu", matplotlib=False, show=True, figsize=(20,3), ordering_keys=None, ordering_keys_time_format=None,
                text_rotation=0):
     """ Visualize the given SHAP values with an additive force layout.
-    
+
     Parameters
     ----------
     base_value : float
@@ -48,14 +48,14 @@ def force_plot(base_value, shap_values, features=None, feature_names=None, out_n
 
     out_names : str
         The name of the outout of the model (plural to support multi-output plotting in the future).
-    
+
     link : "identity" or "logit"
         The transformation used when drawing the tick mark labels. Using logit will change log-odds numbers
-        into probabilities. 
+        into probabilities.
 
     matplotlib : bool
         Whether to use the default Javascript output, or the (less developed) matplotlib output. Using matplotlib
-        can be helpful in scenarios where rendering Javascript/HTML is inconvenient. 
+        can be helpful in scenarios where rendering Javascript/HTML is inconvenient.
 
     """
 
@@ -130,13 +130,13 @@ def force_plot(base_value, shap_values, features=None, feature_names=None, out_n
             Model(None, out_names),
             DenseData(np.zeros((1, len(feature_names))), list(feature_names))
         )
-        
+
         return visualize(e, plot_cmap, matplotlib, figsize=figsize, show=show, text_rotation=text_rotation)
-        
+
     else:
         if matplotlib:
             raise Exception("matplotlib = True is not yet supported for force plots with multiple samples!")
-        
+
         if shap_values.shape[0] > 3000:
             warnings.warn("shap.force_plot is slow for many thousands of rows, try subsampling your data.")
 
@@ -161,15 +161,15 @@ def force_plot(base_value, shap_values, features=None, feature_names=None, out_n
                 DenseData(np.ones((1, len(feature_names))), list(feature_names))
             )
             exps.append(e)
-        
+
         return visualize(
-                    exps, 
-                    plot_cmap=plot_cmap, 
-                    ordering_keys=ordering_keys, 
-                    ordering_keys_time_format=ordering_keys_time_format, 
+                    exps,
+                    plot_cmap=plot_cmap,
+                    ordering_keys=ordering_keys,
+                    ordering_keys_time_format=ordering_keys_time_format,
                     text_rotation=text_rotation
                 )
-            
+
 
 class Explanation:
     def __init__(self):
@@ -318,7 +318,7 @@ class SimpleListVisualizer:
             "features": features,
             "plot_cmap":e.plot_cmap.plot_cmap
         }
-
+        print(self.data)
     def html(self):
         return HTML("""
 <div id='{id}'>{err_msg}</div>
@@ -351,6 +351,7 @@ class AdditiveForceVisualizer:
             "features": features,
             "plot_cmap": plot_cmap
         }
+        print(self.data)
 
     def html(self, label_margin=20):
         self.data["labelMargin"] = label_margin
@@ -362,12 +363,12 @@ class AdditiveForceVisualizer:
     document.getElementById('{id}')
   );
 </script>""".format(err_msg=err_msg, data=json.dumps(self.data), id=id_generator()))
-    
+
     def matplotlib(self, figsize, show, text_rotation):
         fig = draw_additive_plot(self.data, figsize=figsize, show=show, text_rotation=text_rotation)
-        
+
         return fig
-        
+
 
 class AdditiveForceArrayVisualizer:
     def __init__(self, arr, plot_cmap="RdBu", ordering_keys=None, ordering_keys_time_format=None):
@@ -396,6 +397,7 @@ class AdditiveForceArrayVisualizer:
             "ordering_keys": list(ordering_keys) if hasattr(ordering_keys, '__iter__') else None,
             "ordering_keys_time_format": ordering_keys_time_format,
         }
+        print(self.data)
         for (ind,e) in enumerate(arr):
             self.data["explanations"].append({
                 "outValue": ensure_not_numpy(e.out_value),
